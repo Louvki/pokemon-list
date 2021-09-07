@@ -1,4 +1,9 @@
 <template>
+<div>
+  <p @click="chengeCarddsPerPage(10)">10</p>
+  <p @click="chengeCarddsPerPage(20)">20</p>
+  <p @click="chengeCarddsPerPage(50)">50</p>
+</div>
   <Card
   v-for="pokemon of cards"
    :key="pokemon.id"
@@ -43,6 +48,12 @@ export default {
   methods: {
     pageChangedCallback() {
       this.fetchCards();
+    },
+    chengeCarddsPerPage(newAmount){
+      if(newAmount !== this.cardsPerPage) {
+        this.cardsPerPage = newAmount;
+        this.fetchCards();
+      }
     },
     async fetchCards() {
       const offset = (this.currentPage - 1) * this.cardsPerPage;
