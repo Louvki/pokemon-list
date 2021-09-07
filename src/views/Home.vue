@@ -1,7 +1,13 @@
 <template>
-<div v-for="pokemon of cards" :key="pokemon.id" class="card">
-  <p>{{pokemon.name}}</p>
-</div>
+  <Card
+  v-for="pokemon of cards"
+   :key="pokemon.id"
+  :image="pokemon.sprites.front_default"
+  :name="pokemon.name"
+  :height="pokemon.height"
+  :weight="pokemon.weight"
+  :abilities="pokemon.abilities"
+   />
   <div class="pagination">
     <pagination
       v-model="currentPage"
@@ -15,11 +21,13 @@
 <script>
 /* eslint-disable quotes */
 import Pagination from "v-pagination-3";
+import Card from "../components/Card.vue";
 import axios from "axios";
 
 export default {
   components: {
     Pagination,
+    Card,
   },
   data() {
     return {
@@ -38,11 +46,31 @@ export default {
     },
     async fetchCards() {
       const offset = (this.currentPage - 1) * this.cardsPerPage;
-      const res = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}&offset=${offset}`,
-      );
-      this.cards = res.data.results;
-      this.totalAmountOfCards = res.data.count;
+
+      try {
+        const res = await axios.get(
+          `https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}&offset=${offset}`
+        );
+        this.totalAmountOfCards = res.data.count;
+        const pokemonUrlList = res.data.results;
+
+        const promiseList = [];
+        for (const pokemon of pokemonUrlList) {
+          promiseList.push(axios.get(pokemon.url));
+        }
+
+        const res2 = await Promise.all(promiseList);
+        const pokemonList = [];
+        for (const pokemonRes of res2) {
+          pokemonList.push(pokemonRes.data);
+        }
+
+        console.log(pokemonList);
+
+        this.cards = pokemonList;
+      } catch (e) {}
+
+
     },
   },
   computed: {
