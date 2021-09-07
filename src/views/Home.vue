@@ -1,16 +1,13 @@
 <template>
-  <div>
-    <p>Previous</p>
-    <p>Next</p>
-  </div>
-  <div>Home</div>
-  <div>
-    PAG
+<div v-for="pokemon of cards" :key="pokemon.id" class="card">
+  <p>{{pokemon.name}}</p>
+</div>
+  <div class="pagination">
     <pagination
       v-model="currentPage"
       :records="totalAmountOfCards"
       :per-page="cardsPerPage"
-      @paginate="myCallback"
+      @paginate="pageChangedCallback"
     />
   </div>
 </template>
@@ -26,23 +23,26 @@ export default {
   },
   data() {
     return {
+      cards: [],
       cardsPerPage: 10,
       totalAmountOfCards: 0,
       currentPage: 1,
     };
   },
-  async mounted() {
-    const res = await axios.get(
-      `https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}`,
-    );
-    const results = res.data;
-    console.log(results);
-    this.totalAmountOfCards = results.count;
-    console.log(this.pageCount);
+  mounted() {
+    this.fetchCards();
   },
   methods: {
-    clickCallback(page) {
-      console.log(page);
+    pageChangedCallback() {
+      this.fetchCards();
+    },
+    async fetchCards() {
+      const offset = (this.currentPage - 1) * this.cardsPerPage;
+      const res = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}&offset=${offset}`,
+      );
+      this.cards = res.data.results;
+      this.totalAmountOfCards = res.data.count;
     },
   },
   computed: {
@@ -52,3 +52,14 @@ export default {
   },
 };
 </script>
+
+<style >
+.pagination ul {
+  display: flex;
+  list-style: none;
+}
+
+.pagination .page-link.active {
+  color: red;
+}
+</style>
