@@ -1,15 +1,26 @@
 <template>
-<button v-if="currentPage !== 1" @click="$refs.pagination.pageChange(currentPage - 1)">Previous</button>
-<button v-if="currentPage !== pageCount" @click="$refs.pagination.pageChange(currentPage + 1)">Next</button>
+  <button
+    v-if="currentPage !== 1"
+    @click="$refs.pagination.pageChange(currentPage - 1)"
+  >
+    Previous
+  </button>
+  <button
+    v-if="currentPage !== pageCount"
+    @click="$refs.pagination.pageChange(currentPage + 1)"
+  >
+    Next
+  </button>
   <div>
     <p @click="chengeCarddsPerPage(10)">10</p>
     <p @click="chengeCarddsPerPage(20)">20</p>
     <p @click="chengeCarddsPerPage(50)">50</p>
   </div>
-  <input type="text" v-model="searchQuery" v-on:input ="filterCards">
+  <input type="text" v-model="searchQuery" v-on:input="filterCards" />
+
   <Card
     v-for="pokemon of cards"
-    v-show="!pokemon.hideCard"
+    v-show="!pokemon._hideCard"
     :key="pokemon.id"
     :image="pokemon.sprites.other['official-artwork'].front_default"
     :name="pokemon.name"
@@ -19,13 +30,12 @@
   />
   <div class="pagination">
     <Pagination
-    v-if="pageCount"
-    ref="pagination"
-    :currentPage="currentPage"
-    :numberOfPages="pageCount"
-    @pageChange="pageChangedCallback"
+      v-if="pageCount"
+      ref="pagination"
+      :currentPage="currentPage"
+      :numberOfPages="pageCount"
+      @pageChange="pageChangedCallback"
     />
-
   </div>
 </template>
 
@@ -46,17 +56,24 @@ export default {
       cardsPerPage: 20,
       totalAmountOfCards: 0,
       currentPage: 1,
-      searchQuery: ''
+      searchQuery: "",
     };
   },
   mounted() {
     this.fetchCards();
+    this.filterCards();
   },
   methods: {
     filterCards() {
-      this.cards.forEach(card => {
-        card.hideCard = !card.name.includes(this.searchQuery)
-      })
+      this.cards.forEach((card) => {
+        let hideCard = !card.name.includes(this.searchQuery);
+        card.abilities.forEach((ability) => {
+          if (hideCard) {
+            hideCard = !ability.ability.name.includes(this.searchQuery);
+          }
+        });
+        card._hideCard = hideCard;
+      });
     },
     pageChangedCallback(newPage) {
       this.currentPage = newPage;
