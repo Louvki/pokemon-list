@@ -1,32 +1,36 @@
 <template>
-<div>
-  <p @click="chengeCarddsPerPage(10)">10</p>
-  <p @click="chengeCarddsPerPage(20)">20</p>
-  <p @click="chengeCarddsPerPage(50)">50</p>
-</div>
+<button v-if="currentPage !== 1" @click="$refs.pagination.pageChange(currentPage - 1)">Previous</button>
+<button v-if="currentPage !== pageCount" @click="$refs.pagination.pageChange(currentPage + 1)">Next</button>
+  <div>
+    <p @click="chengeCarddsPerPage(10)">10</p>
+    <p @click="chengeCarddsPerPage(20)">20</p>
+    <p @click="chengeCarddsPerPage(50)">50</p>
+  </div>
   <Card
-  v-for="pokemon of cards"
-   :key="pokemon.id"
-  :image="pokemon.sprites.other['official-artwork'].front_default"
-  :name="pokemon.name"
-  :height="pokemon.height"
-  :weight="pokemon.weight"
-  :abilities="pokemon.abilities"
-   />
+    v-for="pokemon of cards"
+    :key="pokemon.id"
+    :image="pokemon.sprites.other['official-artwork'].front_default"
+    :name="pokemon.name"
+    :height="pokemon.height"
+    :weight="pokemon.weight"
+    :abilities="pokemon.abilities"
+  />
   <div class="pagination">
-    <pagination
-      v-model="currentPage"
-      :records="totalAmountOfCards"
-      :per-page="cardsPerPage"
-      @paginate="pageChangedCallback"
+    <Pagination
+    v-if="pageCount"
+    ref="pagination"
+    :currentPage="currentPage"
+    :numberOfPages="pageCount"
+    @pageChange="pageChangedCallback"
     />
+
   </div>
 </template>
 
 <script>
 /* eslint-disable quotes */
-import Pagination from "v-pagination-3";
 import Card from "../components/Card.vue";
+import Pagination from "../components/Pagination.vue";
 import axios from "axios";
 
 export default {
@@ -46,11 +50,12 @@ export default {
     this.fetchCards();
   },
   methods: {
-    pageChangedCallback() {
+    pageChangedCallback(newPage) {
+      this.currentPage = newPage;
       this.fetchCards();
     },
-    chengeCarddsPerPage(newAmount){
-      if(newAmount !== this.cardsPerPage) {
+    chengeCarddsPerPage(newAmount) {
+      if (newAmount !== this.cardsPerPage) {
         this.cardsPerPage = newAmount;
         this.fetchCards();
       }
@@ -78,8 +83,6 @@ export default {
 
         this.cards = pokemonList;
       } catch (e) {}
-
-
     },
   },
   computed: {
