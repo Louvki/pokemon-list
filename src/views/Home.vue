@@ -2,7 +2,7 @@
   <Card
   v-for="pokemon of cards"
    :key="pokemon.id"
-  :image="pokemon.sprites.front_default"
+  :image="pokemon.sprites.other['official-artwork'].front_default"
   :name="pokemon.name"
   :height="pokemon.height"
   :weight="pokemon.weight"
@@ -64,8 +64,6 @@ export default {
         for (const pokemonRes of res2) {
           pokemonList.push(pokemonRes.data);
         }
-
-        console.log(pokemonList);
 
         this.cards = pokemonList;
       } catch (e) {}
