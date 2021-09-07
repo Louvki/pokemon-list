@@ -6,8 +6,10 @@
     <p @click="chengeCarddsPerPage(20)">20</p>
     <p @click="chengeCarddsPerPage(50)">50</p>
   </div>
+  <input type="text" v-model="searchQuery" v-on:input ="filterCards">
   <Card
     v-for="pokemon of cards"
+    v-show="!pokemon.hideCard"
     :key="pokemon.id"
     :image="pokemon.sprites.other['official-artwork'].front_default"
     :name="pokemon.name"
@@ -41,15 +43,21 @@ export default {
   data() {
     return {
       cards: [],
-      cardsPerPage: 10,
+      cardsPerPage: 20,
       totalAmountOfCards: 0,
       currentPage: 1,
+      searchQuery: ''
     };
   },
   mounted() {
     this.fetchCards();
   },
   methods: {
+    filterCards() {
+      this.cards.forEach(card => {
+        card.hideCard = !card.name.includes(this.searchQuery)
+      })
+    },
     pageChangedCallback(newPage) {
       this.currentPage = newPage;
       this.fetchCards();
