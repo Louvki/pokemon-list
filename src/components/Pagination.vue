@@ -1,6 +1,5 @@
 <template>
   <div>
-    ASS
     <ul>
       <li v-for="page in pageRange" :key="page" @click="pageChange(page)">
         {{ page }} _

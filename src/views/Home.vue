@@ -38,6 +38,7 @@
     :height="pokemon.height"
     :weight="pokemon.weight"
     :abilities="pokemon.abilities"
+    @click="$router.push(`${pokemon.name}`)"
   />
   <div class="pagination">
     <Pagination
