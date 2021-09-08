@@ -2,11 +2,11 @@
   <div class="options-container">
     <div class="options-wrapper">
       <p>Search</p>
-      <input type="text" v-model="searchQuery" v-on:input="applySearchQuery" />
+      <input type="text" :value="searchQuery" @input="applySearchQuery($event.target.value)" />
     </div>
     <div class="options-wrapper">
       <p>Sort by</p>
-      <select v-model="activeSort" @change="applySort">
+      <select :value="activeSort" @change="applySort($event.target.value)">
         <option :value="sortType.NONE">None</option>
         <option :value="sortType.NAME_ASC">Name Ascending</option>
         <option :value="sortType.NAME_DESC">Name Descending</option>
@@ -57,7 +57,6 @@
 </template>
 
 <script>
-/* eslint-disable quotes */
 import Card from '../components/Card.vue'
 import Pagination from '../components/Pagination.vue'
 import axios from 'axios'
@@ -68,35 +67,29 @@ export default {
     Card
   },
   data() {
-    const sortType = {
-      NONE: 'none',
-      NAME_ASC: 'name_asc',
-      NAME_DESC: 'name_desc',
-      WEIGHT_ASC: 'weight_asc',
-      WEIGHT_DESC: 'weight_esc',
-      HEIGHT_ASC: 'height_asc',
-      HEIGHT_DESC: 'height_desc'
-    }
-
-    const activeSort = this.$route.params.activeSort || sortType.NONE
-    const searchQuery = this.$route.params.searchQuery || ''
-
     return {
       cards: [],
       originalCardOrder: [],
       cardsPerPage: 20,
-      currentPage: 1,
-      totalAmountOfCards: 0,
-      searchQuery,
-      activeSort,
-      sortType
+      totalAmountOfCards: 0
     }
   },
   mounted() {
+    if (this.$route.query.searchQuery) {
+      this.$store.commit('SET_SEARCH_QUERY', this.$route.query.searchQuery)
+    }
+    if (this.$route.query.activeSort) {
+      this.$store.commit('SET_ACTIVE_SORT', this.$route.query.activeSort)
+    }
+    if (this.$route.query.currentPage) {
+      this.$store.commit('SET_CURRENT_PAGE', Number(this.$route.query.currentPage))
+    }
+
     this.fetchCards()
   },
   methods: {
-    applySearchQuery() {
+    applySearchQuery(newSearchQuery) {
+      this.$store.commit('SET_SEARCH_QUERY', newSearchQuery)
       this.updateQueryParams()
 
       this.cards.forEach((card) => {
@@ -109,7 +102,8 @@ export default {
         card._hideCard = hideCard
       })
     },
-    applySort() {
+    applySort(newSort) {
+      this.$store.commit('SET_ACTIVE_SORT', newSort)
       this.updateQueryParams()
 
       switch (this.activeSort) {
@@ -159,12 +153,12 @@ export default {
         this.originalCardOrder = JSON.parse(JSON.stringify(pokemonList))
         this.cards = pokemonList
 
-        this.applySort()
-        this.applySearchQuery()
+        this.applySort(this.activeSort)
+        this.applySearchQuery(this.searchQuery)
       } catch (e) {}
     },
     currentPageChanged(newPage) {
-      this.currentPage = newPage
+      this.$store.commit('SET_CURRENT_PAGE', newPage)
       this.updateQueryParams()
       this.fetchCards()
     },
@@ -184,6 +178,18 @@ export default {
   computed: {
     pageCount() {
       return Math.ceil(this.totalAmountOfCards / this.cardsPerPage)
+    },
+    activeSort() {
+      return this.$store.state.activeSort
+    },
+    searchQuery() {
+      return this.$store.state.searchQuery
+    },
+    currentPage() {
+      return this.$store.state.currentPage
+    },
+    sortType() {
+      return this.$store.state.sortType
     }
   }
 }

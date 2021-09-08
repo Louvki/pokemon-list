@@ -1,18 +1,24 @@
 <template>
   <div class="card card-1">
-  <div class="top">
-    <img :src="image" alt="">
-  </div>
-  <div class="bottom">
-    <p>{{name}}</p>
-    <p>Height: {{height}}</p>
-    <p>Weight: {{weight}}</p>
-    <p>Abilities:</p>
-    <ul>
-      <li v-for="ability of abilities" :key="ability.slot">{{ability.ability.name}}</li>
-    </ul>
+    <div class="top">
+      <img :src="image" :alt="name" />
     </div>
-</div>
+    <div class="bottom">
+      <p class="title">{{ name }}</p>
+      <div class="line">
+        <p>Height:</p>
+        <p style="display:contents">{{ height }}</p>
+      </div>
+      <div class="line">
+        <p>Weight:</p>
+        <p style="display:contents">{{ weight }}</p>
+      </div>
+      <p>Abilities:</p>
+      <ul>
+        <li v-for="ability of abilities" :key="ability.slot">- {{ ability.ability.name }}</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -20,11 +26,11 @@ export default {
   props: {
     image: {
       type: String,
-      required: true,
+      required: true
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     height: {
       type: Number,
@@ -38,8 +44,8 @@ export default {
       type: Array,
       required: true
     }
-  },
-};
+  }
+}
 </script>
 
 <style scoped>
@@ -67,17 +73,14 @@ export default {
 }
 
 .card .bottom {
-  width: 100%;
+   padding: 0 20px 20px 20px;
 }
 
-.card .bottom p {
-  text-align: left;
-  height: 80px;
+.card .bottom p,
+.card .bottom li
+{
   width: 100%;
-  box-sizing: border-box;
   margin: 0;
-  padding: 0;
-  padding-left: 20px;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -86,13 +89,33 @@ export default {
   font-family: Roboto, sans-serif;
 }
 
+.card .bottom ul {
+  margin-top: 5px;
+}
+
+.card .bottom .title {
+  position: relative;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 20px;
+}
+
+
+.card .bottom .line {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 20px;
+}
+
+
 .card-1 {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .card-1:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   cursor: pointer;
 }
 </style>
