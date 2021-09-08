@@ -1,7 +1,7 @@
 # pokemon-list
 A simple SPA that consumes the https://pokeapi.co/ API and displays all the pokemons in a paginated list. State of the selected page, sort and the inputed search query are preserved between navigations using a mixture of Vuex and URL Queries.
 
-Possible optimizations:
+Possible optimizations:  <br>
     - UX:   Improve the Details page to display more data about the pokemon. <br>
     - UX:   Improve the design of the details page.  <br>
     - PERF: Lazyloading of images.  <br>
