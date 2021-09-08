@@ -27,7 +27,7 @@
     <p @click="updateCardsPerPage(20)">20</p>
     <p @click="updateCardsPerPage(50)">50</p>
   </div>
-  <input type="text" v-model="searchQuery" v-on:input="filterCards" />
+  <input type="text" v-model="searchQuery" v-on:input="applySearchQuery" />
 
   <Card
     v-for="pokemon of cards"
@@ -72,33 +72,24 @@ export default {
       HEIGHT_DESC: "height_desc",
     };
 
+    const activeSort = this.$route.params.activeSort || sortType.NONE;
+    const searchQuery = this.$route.params.searchQuery || "";
+
     return {
       cards: [],
       originalCardOrder: [],
       cardsPerPage: 20,
       totalAmountOfCards: 0,
       currentPage: 1,
-      searchQuery: "",
-      activeSort: sortType.NONE,
+      searchQuery,
+      activeSort,
       sortType,
     };
   },
   mounted() {
     this.fetchCards();
-    this.filterCards();
   },
   methods: {
-    filterCards() {
-      this.cards.forEach((card) => {
-        let hideCard = !card.name.includes(this.searchQuery);
-        card.abilities.forEach((ability) => {
-          if (hideCard) {
-            hideCard = !ability.ability.name.includes(this.searchQuery);
-          }
-        });
-        card._hideCard = hideCard;
-      });
-    },
     pageChangedCallback(newPage) {
       this.currentPage = newPage;
       this.fetchCards();
@@ -109,7 +100,28 @@ export default {
         this.fetchCards();
       }
     },
+    applySearchQuery() {
+      this.$router.push({
+        path: "/",
+        query: { activeSort: this.activeSort, searchQuery: this.searchQuery },
+      });
+
+      this.cards.forEach((card) => {
+        let hideCard = !card.name.includes(this.searchQuery);
+        card.abilities.forEach((ability) => {
+          if (hideCard) {
+            hideCard = !ability.ability.name.includes(this.searchQuery);
+          }
+        });
+        card._hideCard = hideCard;
+      });
+    },
     applySort() {
+      this.$router.push({
+        path: "/",
+        query: { activeSort: this.activeSort, searchQuery: this.searchQuery },
+      });
+
       switch (this.activeSort) {
         case this.sortType.NONE:
           this.cards = this.originalCardOrder;
@@ -141,7 +153,7 @@ export default {
           break;
         case this.sortType.HEIGHT_DESC:
           this.cards.sort((a, b) =>
-            a.height > b.height ? 1 : b.height > a.height ? -1 : 0
+            b.height > a.height ? 1 : a.height > b.height ? -1 : 0
           );
           break;
       }
@@ -169,7 +181,9 @@ export default {
 
         this.originalCardOrder = pokemonList;
         this.cards = pokemonList;
-        thi.applySort();
+
+        this.applySort();
+        this.applySearchQuery();
       } catch (e) {}
     },
   },
