@@ -13,6 +13,9 @@ Possible optimizations:  <br>
     - UX:   Error handling for when the API fails to retrieve data.  <br>
     - FEAT: Infinte scrolling.  <br>
     - TEST: More test coverage on other components besides Pagination.vue.  <br>
+<br>
+Other improvements: <br>
+    - Conventional Commits.
 
 ## Project setup
 ```
