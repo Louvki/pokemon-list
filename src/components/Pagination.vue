@@ -1,74 +1,79 @@
 <template>
-  <div>
-    <ul>
-      <li v-for="page in pageRange" :key="page" @click="pageChange(page)">
-        {{ page }} _
-      </li>
-    </ul>
+  <div class="pagination-wrapper">
+    <a class="btn btn-dark" @click="changeCurrentPage(currentPage - 1)">Previous</a>
+    <p class="page-numbers">{{ currentPage }} / {{ numberOfPages }}</p>
+    <a class="btn btn-dark" @click="changeCurrentPage(currentPage + 1)">Next</a>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      pageRange: [],
-      pageStart: 20,
-      pageEnd: 30,
-    };
-  },
   props: {
     currentPage: {
       type: Number,
-      default: 1,
+      default: 1
     },
     numberOfPages: {
       type: Number,
-      require: true,
-    },
-  },
-  mounted() {
-    this.pageChange(1);
-  },
-  computed: {
-    currentPageVal: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit("pageChange", Number(value));
-      },
-    },
+      require: true
+    }
   },
   methods: {
-    pageChange(page) {
-      this.currentPageVal = page;
-      let start = page - 4;
-      let end = page + 5;
-
-      // Check if range
-      if (start < 1) {
-        end = end + 1 - start;
-        start = 1;
+    changeCurrentPage(newPage) {
+      if (newPage < 1 || newPage > this.numberOfPages) {
+        return
       }
-
-      if (end > this.numberOfPages) {
-        end = this.numberOfPages;
-        start = end - 9;
-        if (start < 1) {
-          start = 1;
-        }
-      }
-
-      this.pageRange = [];
-      while (start <= end) {
-        this.pageRange.push(start);
-        start++;
-      }
-    },
-  },
-};
+      this.$emit('currentPageChanged', newPage)
+    }
+  }
+}
 </script>
 
-<style>
+<style scoped>
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.page-numbers {
+  margin: 0 12px;
+  align-items: center;
+  display: flex;
+}
+
+.btn {
+  background: transparent;
+  color: #1f1f1f;
+  cursor: pointer;
+
+  min-width: 120px;
+  text-align: center;
+
+  border-radius: 0px;
+  text-decoration: none;
+  padding: 12px 18px;
+  font-size: 14px;
+  line-height: 19px;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  letter-spacing: 3px;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -ms-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+
+.btn-dark {
+  border: none;
+  background: transparent;
+  color: #1f1f1f;
+}
+.btn-dark:hover,
+.btn-dark.active {
+  /* border:solid 2px #1f1f1f; */
+  background: #1f1f1f;
+  color: #fff;
+}
 </style>
