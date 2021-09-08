@@ -1,8 +1,8 @@
 <template>
   <div class="pagination-wrapper">
-    <a class="btn btn-dark" @click="changeCurrentPage(currentPage - 1)">Previous</a>
+    <a class="btn btn-dark previous-btn" @click="changeCurrentPage(currentPage - 1)">Previous</a>
     <p class="page-numbers">{{ currentPage }} / {{ numberOfPages }}</p>
-    <a class="btn btn-dark" @click="changeCurrentPage(currentPage + 1)">Next</a>
+    <a class="btn btn-dark next-btn" @click="changeCurrentPage(currentPage + 1)">Next</a>
   </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
   methods: {
     changeCurrentPage(newPage) {
       if (newPage < 1 || newPage > this.numberOfPages) {
-        return
+        return null;
       }
       this.$emit('currentPageChanged', newPage)
     }

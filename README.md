@@ -8,6 +8,7 @@ Possible optimizations:
     - UX:   First and Last buttons in Pagination.
     - UX:   Displaying a range of pages for selection in Pagination.
     - UX:   The search should search through all of the results rather than the results per page.
+    - UX:   Error handling for when the API fails to retrieve data.
 
 ## Project setup
 ```
