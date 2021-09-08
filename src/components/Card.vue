@@ -5,8 +5,8 @@
   </div>
   <div class="bottom">
     <p>{{name}}</p>
-    <p>{{height}}</p>
-    <p>{{weight}}</p>
+    <p>Height: {{height}}</p>
+    <p>Weight: {{weight}}</p>
     <p>Abilities:</p>
     <ul>
       <li v-for="ability of abilities" :key="ability.slot">{{ability.ability.name}}</li>

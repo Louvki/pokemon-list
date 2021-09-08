@@ -12,9 +12,20 @@
     Next
   </button>
   <div>
-    <p @click="chengeCarddsPerPage(10)">10</p>
-    <p @click="chengeCarddsPerPage(20)">20</p>
-    <p @click="chengeCarddsPerPage(50)">50</p>
+    <select v-model="activeSort" @change="applySort">
+      <option :value="sortType.NONE">Sort by</option>
+      <option :value="sortType.NAME_ASC">Name Ascending</option>
+      <option :value="sortType.NAME_DESC">Name Descending</option>
+      <option :value="sortType.WEIGHT_ASC">Weight Ascending</option>
+      <option :value="sortType.WEIGHT_DESC">Weight Descending</option>
+      <option :value="sortType.HEIGHT_ASC">Height Ascending</option>
+      <option :value="sortType.HEIGHT_DESC">Height Descending</option>
+    </select>
+  </div>
+  <div>
+    <p @click="updateCardsPerPage(10)">10</p>
+    <p @click="updateCardsPerPage(20)">20</p>
+    <p @click="updateCardsPerPage(50)">50</p>
   </div>
   <input type="text" v-model="searchQuery" v-on:input="filterCards" />
 
@@ -51,12 +62,25 @@ export default {
     Card,
   },
   data() {
+    const sortType = {
+      NONE: "none",
+      NAME_ASC: "name_asc",
+      NAME_DESC: "name_desc",
+      WEIGHT_ASC: "weight_asc",
+      WEIGHT_DESC: "weight_esc",
+      HEIGHT_ASC: "height_asc",
+      HEIGHT_DESC: "height_desc",
+    };
+
     return {
       cards: [],
+      originalCardOrder: [],
       cardsPerPage: 20,
       totalAmountOfCards: 0,
       currentPage: 1,
       searchQuery: "",
+      activeSort: sortType.NONE,
+      sortType,
     };
   },
   mounted() {
@@ -79,10 +103,47 @@ export default {
       this.currentPage = newPage;
       this.fetchCards();
     },
-    chengeCarddsPerPage(newAmount) {
+    updateCardsPerPage(newAmount) {
       if (newAmount !== this.cardsPerPage) {
         this.cardsPerPage = newAmount;
         this.fetchCards();
+      }
+    },
+    applySort() {
+      switch (this.activeSort) {
+        case this.sortType.NONE:
+          this.cards = this.originalCardOrder;
+          break;
+        case this.sortType.NAME_ASC:
+          this.cards.sort((a, b) =>
+            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+          );
+          break;
+        case this.sortType.NAME_DESC:
+          this.cards.sort((a, b) =>
+            b.name > a.name ? 1 : a.name > b.name ? -1 : 0
+          );
+          break;
+        case this.sortType.WEIGHT_ASC:
+          this.cards.sort((a, b) =>
+            a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0
+          );
+          break;
+        case this.sortType.WEIGHT_DESC:
+          this.cards.sort((a, b) =>
+            a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0
+          );
+          break;
+        case this.sortType.HEIGHT_ASC:
+          this.cards.sort((a, b) =>
+            a.height > b.height ? 1 : b.height > a.height ? -1 : 0
+          );
+          break;
+        case this.sortType.HEIGHT_DESC:
+          this.cards.sort((a, b) =>
+            a.height > b.height ? 1 : b.height > a.height ? -1 : 0
+          );
+          break;
       }
     },
     async fetchCards() {
@@ -106,7 +167,9 @@ export default {
           pokemonList.push(pokemonRes.data);
         }
 
+        this.originalCardOrder = pokemonList;
         this.cards = pokemonList;
+        thi.applySort();
       } catch (e) {}
     },
   },
