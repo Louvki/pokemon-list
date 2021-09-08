@@ -2,7 +2,10 @@
   <div class="options-container">
     <div class="options-wrapper">
       <p>Search</p>
-      <input type="text" :value="searchQuery" @input="applySearchQuery($event.target.value)" />
+      <input
+        type="text"
+        :value="searchQuery"
+        @input="applySearchQuery($event.target.value)"/>
     </div>
     <div class="options-wrapper">
       <p>Sort by</p>
@@ -30,169 +33,176 @@
       v-if="pageCount"
       :currentPage="currentPage"
       :numberOfPages="pageCount"
-      @currentPageChanged="currentPageChanged"
-    />
+      @currentPageChanged="currentPageChanged"/>
   </div>
   <div class="card-wrapper">
     <Card
       v-for="pokemon of cards"
-      v-show="!pokemon._hideCard"
+      v-show="!pokemon.customerHideCard"
       :key="pokemon.id"
       :image="pokemon.sprites.other['official-artwork'].front_default"
       :name="pokemon.name"
       :height="pokemon.height"
       :weight="pokemon.weight"
       :abilities="pokemon.abilities"
-      @click="$router.push(`${pokemon.name}`)"
-    />
+      @click="$router.push(`${pokemon.name}`)"/>
   </div>
   <div class="pagination">
     <Pagination
       v-if="pageCount"
       :currentPage="currentPage"
       :numberOfPages="pageCount"
-      @currentPageChanged="currentPageChanged"
-    />
+      @currentPageChanged="currentPageChanged"/>
   </div>
 </template>
 
 <script>
-import Card from '../components/Card.vue'
-import Pagination from '../components/Pagination.vue'
-import axios from 'axios'
+import axios from 'axios';
+import Card from '../components/Card.vue';
+import Pagination from '../components/Pagination.vue';
 
 export default {
   components: {
     Pagination,
-    Card
+    Card,
   },
   data() {
     return {
       cards: [],
       originalCardOrder: [],
       cardsPerPage: 20,
-      totalAmountOfCards: 0
-    }
+      totalAmountOfCards: 0,
+    };
   },
   mounted() {
     if (this.$route.query.searchQuery) {
-      this.$store.commit('SET_SEARCH_QUERY', this.$route.query.searchQuery)
+      this.$store.commit('SET_SEARCH_QUERY', this.$route.query.searchQuery);
     }
     if (this.$route.query.activeSort) {
-      this.$store.commit('SET_ACTIVE_SORT', this.$route.query.activeSort)
+      this.$store.commit('SET_ACTIVE_SORT', this.$route.query.activeSort);
     }
     if (this.$route.query.currentPage) {
-      this.$store.commit('SET_CURRENT_PAGE', Number(this.$route.query.currentPage))
+      this.$store.commit(
+        'SET_CURRENT_PAGE',
+        Number(this.$route.query.currentPage),
+      );
     }
 
-    this.fetchCards()
+    this.fetchCards();
   },
   methods: {
     applySearchQuery(newSearchQuery) {
-      this.$store.commit('SET_SEARCH_QUERY', newSearchQuery)
-      this.updateQueryParams()
+      this.$store.commit('SET_SEARCH_QUERY', newSearchQuery);
+      this.updateQueryParams();
 
       this.cards.forEach((card) => {
-        let hideCard = !card.name.includes(this.searchQuery)
+        let hideCard = !card.name.includes(this.searchQuery);
         card.abilities.forEach((ability) => {
           if (hideCard) {
-            hideCard = !ability.ability.name.includes(this.searchQuery)
+            hideCard = !ability.ability.name.includes(this.searchQuery);
           }
-        })
-        card._hideCard = hideCard
-      })
+        });
+        card.customerHideCard = hideCard;
+      });
     },
     applySort(newSort) {
-      this.$store.commit('SET_ACTIVE_SORT', newSort)
-      this.updateQueryParams()
+      this.$store.commit('SET_ACTIVE_SORT', newSort);
+      this.updateQueryParams();
 
       switch (this.activeSort) {
         case this.sortType.NONE:
-          this.cards = []
-          this.cards.push(...this.originalCardOrder)
-          break
+          this.cards = [];
+          this.cards.push(...this.originalCardOrder);
+          break;
         case this.sortType.NAME_ASC:
-          this.cards.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0));
+          break;
         case this.sortType.NAME_DESC:
-          this.cards.sort((a, b) => (b.name > a.name ? 1 : a.name > b.name ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (b.name > a.name ? 1 : a.name > b.name ? -1 : 0));
+          break;
         case this.sortType.WEIGHT_ASC:
-          this.cards.sort((a, b) => (a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0));
+          break;
         case this.sortType.WEIGHT_DESC:
-          this.cards.sort((a, b) => (a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (a.weight > b.weight ? 1 : b.weight > a.weight ? -1 : 0));
+          break;
         case this.sortType.HEIGHT_ASC:
-          this.cards.sort((a, b) => (a.height > b.height ? 1 : b.height > a.height ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (a.height > b.height ? 1 : b.height > a.height ? -1 : 0));
+          break;
         case this.sortType.HEIGHT_DESC:
-          this.cards.sort((a, b) => (b.height > a.height ? 1 : a.height > b.height ? -1 : 0))
-          break
+          this.cards.sort((a, b) => (b.height > a.height ? 1 : a.height > b.height ? -1 : 0));
+          break;
+        default:
       }
     },
     async fetchCards() {
-      const offset = (this.currentPage - 1) * this.cardsPerPage
+      const offset = (this.currentPage - 1) * this.cardsPerPage;
 
       try {
-        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}&offset=${offset}`)
-        this.totalAmountOfCards = res.data.count
-        const pokemonUrlList = res.data.results
+        const res = await axios.get(
+          `https://pokeapi.co/api/v2/pokemon?limit=${this.cardsPerPage}&offset=${offset}`,
+        );
+        this.totalAmountOfCards = res.data.count;
+        const pokemonUrlList = res.data.results;
 
-        const promiseList = []
+        const promiseList = [];
         for (const pokemon of pokemonUrlList) {
-          promiseList.push(axios.get(pokemon.url))
+          promiseList.push(axios.get(pokemon.url));
         }
 
-        const res2 = await Promise.all(promiseList)
-        const pokemonList = []
+        const res2 = await Promise.all(promiseList);
+        const pokemonList = [];
         for (const pokemonRes of res2) {
-          pokemonList.push(pokemonRes.data)
+          pokemonList.push(pokemonRes.data);
         }
 
-        this.originalCardOrder = JSON.parse(JSON.stringify(pokemonList))
-        this.cards = pokemonList
+        this.originalCardOrder = JSON.parse(JSON.stringify(pokemonList));
+        this.cards = pokemonList;
 
-        this.applySort(this.activeSort)
-        this.applySearchQuery(this.searchQuery)
+        this.applySort(this.activeSort);
+        this.applySearchQuery(this.searchQuery);
       } catch (e) {}
     },
     currentPageChanged(newPage) {
-      this.$store.commit('SET_CURRENT_PAGE', newPage)
-      this.updateQueryParams()
-      this.fetchCards()
+      this.$store.commit('SET_CURRENT_PAGE', newPage);
+      this.updateQueryParams();
+      this.fetchCards();
     },
     cardsPerPageChanged() {
       if (this.currentPage > this.pageCount) {
-        this.currentPage = this.pageCount
+        this.currentPage = this.pageCount;
       }
-      this.fetchCards()
+      this.fetchCards();
     },
     updateQueryParams() {
       this.$router.push({
         path: '/',
-        query: { activeSort: this.activeSort, searchQuery: this.searchQuery, currentPage: this.currentPage }
-      })
-    }
+        query: {
+          activeSort: this.activeSort,
+          searchQuery: this.searchQuery,
+          currentPage: this.currentPage,
+        },
+      });
+    },
   },
   computed: {
     pageCount() {
-      return Math.ceil(this.totalAmountOfCards / this.cardsPerPage)
+      return Math.ceil(this.totalAmountOfCards / this.cardsPerPage);
     },
     activeSort() {
-      return this.$store.state.activeSort
+      return this.$store.state.activeSort;
     },
     searchQuery() {
-      return this.$store.state.searchQuery
+      return this.$store.state.searchQuery;
     },
     currentPage() {
-      return this.$store.state.currentPage
+      return this.$store.state.currentPage;
     },
     sortType() {
-      return this.$store.state.sortType
-    }
-  }
-}
+      return this.$store.state.sortType;
+    },
+  },
+};
 </script>
 
 <style scoped>

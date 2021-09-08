@@ -8,13 +8,11 @@
           searchQuery: $store.state.searchQuery,
           currentPage: $store.state.currentPage
         }
-      }"
-    >
+      }">
       <img
         class="back-arrow"
         src="https://www.pinclipart.com/picdir/big/544-5440422_back-arrow-icon-transparent-png-clipart-free-download.png"
-        alt=""
-      />
+        alt=""/>
     </router-link>
 
     <div class="about" v-if="pokemon">
@@ -27,19 +25,19 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   data() {
     return {
       pokemon: null
-    }
+    };
   },
   async mounted() {
-    const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${this.$route.params.id}`)
-    this.pokemon = res.data
+    const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${this.$route.params.id}`);
+    this.pokemon = res.data;
   }
-}
+};
 </script>
 
 <style scoped>

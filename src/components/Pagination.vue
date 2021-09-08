@@ -23,10 +23,10 @@ export default {
       if (newPage < 1 || newPage > this.numberOfPages) {
         return null;
       }
-      this.$emit('currentPageChanged', newPage)
+      this.$emit('currentPageChanged', newPage);
     }
   }
-}
+};
 </script>
 
 <style scoped>

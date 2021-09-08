@@ -17,12 +17,12 @@ describe('Pagination.vue', () => {
     const wrapper = shallowMount(Pagination, {
       props: { currentPage, numberOfPages},
     });
-    expect(wrapper.find('.previous-btn').exists()).toBe(true)
-    const previousBtn = wrapper.find('.previous-btn')
+    expect(wrapper.find('.previous-btn').exists()).toBe(true);
+    const previousBtn = wrapper.find('.previous-btn');
 
-    const spy = spyOn(wrapper.vm, 'changeCurrentPage')
-    previousBtn.trigger('click')
-    expect(spy).toHaveBeenCalled()
+    const spy = spyOn(wrapper.vm, 'changeCurrentPage');
+    previousBtn.trigger('click');
+    expect(spy).toHaveBeenCalled();
   });
 
   it('Clicking on next button calls the changeCurrentPage method', () => {
@@ -31,12 +31,12 @@ describe('Pagination.vue', () => {
     const wrapper = shallowMount(Pagination, {
       props: { currentPage, numberOfPages},
     });
-    expect(wrapper.find('.next-btn').exists()).toBe(true)
-    const nextBtn = wrapper.find('.next-btn')
+    expect(wrapper.find('.next-btn').exists()).toBe(true);
+    const nextBtn = wrapper.find('.next-btn');
 
-    const spy = spyOn(wrapper.vm, 'changeCurrentPage')
-    nextBtn.trigger('click')
-    expect(spy).toHaveBeenCalled()
+    const spy = spyOn(wrapper.vm, 'changeCurrentPage');
+    nextBtn.trigger('click');
+    expect(spy).toHaveBeenCalled();
   });
 
 
@@ -48,10 +48,10 @@ describe('Pagination.vue', () => {
     });
     wrapper.vm.changeCurrentPage(3);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(wrapper.emitted().currentPageChanged).toBeTruthy()
-    expect(wrapper.emitted().currentPageChanged[0]).toEqual([3])
+    expect(wrapper.emitted().currentPageChanged).toBeTruthy();
+    expect(wrapper.emitted().currentPageChanged[0]).toEqual([3]);
   });
 
     it('Calling changeCurrentPage outside the range of "1 - numberOfPages" results in no event emitted', async () => {
@@ -64,8 +64,8 @@ describe('Pagination.vue', () => {
     wrapper.vm.changeCurrentPage(0);
     wrapper.vm.changeCurrentPage(11);
 
-    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick();
 
-    expect(wrapper.emitted().currentPageChanged).toBeFalsy()
+    expect(wrapper.emitted().currentPageChanged).toBeFalsy();
   });
 });
